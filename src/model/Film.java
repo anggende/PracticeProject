@@ -9,13 +9,22 @@ public class Film {
 	private String filmRating;
 	private String specialFeatures;
 	private String actorLastName;
-	public Film(String title, String genre, String description, String filmRating, String specialFeatures, String actorLastName) {
+	private int rentalDuration;
+	private int length;
+	private Double rentalRate;
+	private Double replacementCost;
+	public Film(String title, String genre, String description, String filmRating, String specialFeatures, String actorLastName, int rentalDuration,
+			int length, Double rentalRate, Double replacementCost) {
 		this.title= title;
 		this.genre=genre;
 		this.description=description;
 		this.filmRating = filmRating;
 		this.specialFeatures=specialFeatures;
 		this.actorLastName=actorLastName;
+		this.rentalDuration=rentalDuration;
+		this.length=length;
+		this.rentalRate=rentalRate;
+		this.replacementCost=replacementCost;
 	}
 	@Override
 	public String toString() {
@@ -64,5 +73,35 @@ public class Film {
 	}
 	public void setActorlastName(String actorLastName) {
 		this.actorLastName = actorLastName;
+	}
+	public String getActorLastName() {
+		return actorLastName;
+	}
+	public void setActorLastName(String actorLastName) {
+		this.actorLastName = actorLastName;
+	}
+	public int getRentalDuration() {
+		return rentalDuration;
+	}
+	public void setRentalDuration(int rentalDuration) {
+		this.rentalDuration = rentalDuration;
+	}
+	public int getLength() {
+		return length;
+	}
+	public void setLength(int length) {
+		this.length = length;
+	}
+	public Double getRentalRate() {
+		return rentalRate;
+	}
+	public void setRentalRate(Double rentalRate) {
+		this.rentalRate = rentalRate;
+	}
+	public Double getReplacementCost() {
+		return replacementCost;
+	}
+	public void setReplacementCost(Double replacementCost) {
+		this.replacementCost = replacementCost;
 	}
 }

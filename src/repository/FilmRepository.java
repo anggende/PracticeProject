@@ -22,21 +22,29 @@ public class FilmRepository {
    public void addFilm(Film film) throws SQLException {
    	try {
 		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
-		    query = "INSERT INTO film(film_id, title, genre, description, rating, special_features) VALUES( ?, ?, ?, ?, ?, ?)";
+		    query = "INSERT INTO film(film_id, title, genre, description, rating, special_features, language_id, original_language_id"
+		    		+ ", rental_duration, rental_rate, length, replacement_cost) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		    PreparedStatement preparedStatement = conn.prepareStatement(query);
-		    
-		    preparedStatement.setLong(1, film.getId());
+		    preparedStatement.setLong(1, this.getLastFilmId()+1); 
 		    preparedStatement.setString(2, film.getTitle());
-		    preparedStatement.setString(3, film.getGenre());
+		    preparedStatement.setString(3, null);
 		    preparedStatement.setString(4, film.getDescription());
 		    preparedStatement.setString(5, film.getFilmRating());
-		    preparedStatement.setString(6, film.getSpecialFeatures());
+		    preparedStatement.setString(6, null);
+		    
+		    preparedStatement.setLong(7, 1);
+		    preparedStatement.setString(8, null);
+		    preparedStatement.setInt(9, film.getRentalDuration());
+		    preparedStatement.setDouble(10, film.getRentalRate());
+		    preparedStatement.setInt(11, film.getLength());
+		    preparedStatement.setDouble(12, film.getReplacementCost());
+		    
 		    preparedStatement.executeUpdate();
 		    
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-				conn.close();
+			conn.close();
 		}	
    }
    
@@ -63,6 +71,60 @@ public class FilmRepository {
 		}	
    }
    
+   public void addFilmSpecialFeaturesToFilm(String specialFeatures) throws SQLException {
+	   try {
+		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
+		    query = "UPDATE film SET special_features = ? WHERE film_id = ?";
+		    PreparedStatement preparedStatement = conn.prepareStatement(query);
+		    
+		    preparedStatement.setString(1, specialFeatures);
+		    preparedStatement.setLong(2, this.getLastFilmId());
+		    preparedStatement.executeUpdate();
+		   
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+				conn.close();
+		}	
+   }
+   
+   public void addNewFilmCategoryDetails(Long genreId) throws SQLException {
+	   try {
+		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
+		    String query = "INSERT INTO film_category(film_id,category_id) VALUES(?,?)";
+		    PreparedStatement preparedStatement = conn.prepareStatement(query);
+		    
+		    preparedStatement.setLong(1, this.getLastFilmId());
+		    preparedStatement.setLong(2, genreId);
+		    preparedStatement.executeUpdate();
+		   
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+				conn.close();
+		}	
+   }
+   
+   public void addStarringFilmActorsDetails(Long actor) throws SQLException {
+	   try {
+		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
+		    String query = "INSERT INTO film_actor(actor_id,film_id) VALUES (?,?)";
+		    PreparedStatement preparedStatement = conn.prepareStatement(query);
+		    preparedStatement.setLong(1, actor);
+		    preparedStatement.setLong(2, this.getLastFilmId());
+		    preparedStatement.executeUpdate();
+		   
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+				conn.close();
+		}	
+   }
+   
+   
+   
+   
+   
    public Film getFilmByFilmId(Long filmId) throws SQLException {
 	   try {
 		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
@@ -73,7 +135,7 @@ public class FilmRepository {
 		    preparedStatement.setLong(1, filmId);
 		    
 		    ResultSet resultSet = preparedStatement.executeQuery();
-		    Film film = new Film(null, null, null, null, null, null);
+		    Film film = new Film(null, null, null, null, null, null, 0, 0, null, null);
 		    while (resultSet.next()) {
 		    	film.setTitle(resultSet.getString(1));
 		    	film.setGenre(resultSet.getString(2));
@@ -148,5 +210,88 @@ public class FilmRepository {
 			Film starredFilm = this.getFilmByFilmId(filmId);
 			System.out.println("* " + starredFilm.getTitle());
 		}
-}
+   }
+   
+   public Long getLastFilmId() throws SQLException {
+	   try {
+		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
+		    
+		    query = "SELECT MAX(film_id) FROM film";
+		    PreparedStatement preparedStatement = conn.prepareStatement(query);
+		    
+		    ResultSet resultSet = preparedStatement.executeQuery();
+		    Long lastFilmId = null;
+		    
+		    while(resultSet.next()) {
+		    	lastFilmId = resultSet.getLong(1);
+		    }
+		    return lastFilmId;
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+				conn.close();
+		}	
+   }
+   
+   
+   public void getGenreList() throws SQLException {
+	   try {
+		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
+		    
+		    query = "SELECT category_id, category.name FROM category";
+		    PreparedStatement preparedStatement = conn.prepareStatement(query);
+		    
+		    ResultSet resultSet = preparedStatement.executeQuery();
+		    
+		    while(resultSet.next()) {
+		    	System.out.println("["+resultSet.getLong(1)+"] "+resultSet.getString(2));
+		    }
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+				conn.close();
+		}	
+    }
+   
+   public List<String> getAllFilms() throws SQLException {
+	   try {
+		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
+		    
+		    query = "SELECT title FROM film";
+		    PreparedStatement preparedStatement = conn.prepareStatement(query);
+		    ResultSet resultSet = preparedStatement.executeQuery();
+		    
+		    List<String> filmTitles = new ArrayList();
+		    while(resultSet.next()) {
+		    	String filmTitle = resultSet.getString(1);
+		    	filmTitles.add(filmTitle);
+		    }
+		    return filmTitles;
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+				conn.close();
+		}	
+   }
+   
+   public void deleteFilm(Long id) throws SQLException {
+	   try {
+		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
+		    
+		    query = "DELETE film, film_category, film_actor FROM film INNER JOIN film_actor ON film_actor.film_id=film.film_id INNER JOIN film_category ON film_category.film_id=film.film_id WHERE film.film_id=?";
+		    PreparedStatement preparedStatement = conn.prepareStatement(query);
+		    preparedStatement.setLong(1, id);
+		    preparedStatement.execute();
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+				conn.close();
+		}	
+   }
 }
