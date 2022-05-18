@@ -279,11 +279,11 @@ public class FilmRepository {
 		}	
    }
    
-   public void deleteFilm(Long id) throws SQLException {
+   public void deleteFilmFromFilmActor(Long id) throws SQLException {
 	   try {
 		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
 		    
-		    query = "DELETE film, film_category, film_actor FROM film INNER JOIN film_actor ON film_actor.film_id=film.film_id INNER JOIN film_category ON film_category.film_id=film.film_id WHERE film.film_id=?";
+		    query = "DELETE FROM film_actor WHERE film_id = ?";
 		    PreparedStatement preparedStatement = conn.prepareStatement(query);
 		    preparedStatement.setLong(1, id);
 		    preparedStatement.execute();
@@ -294,4 +294,37 @@ public class FilmRepository {
 				conn.close();
 		}	
    }
+   
+   public void deleteFilmFromFilmCategory(Long id) throws SQLException {
+	   try {
+		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
+		    
+		    query = "DELETE FROM film_category WHERE film_id = ?";
+		    PreparedStatement preparedStatement = conn.prepareStatement(query);
+		    preparedStatement.setLong(1, id);
+		    preparedStatement.execute();
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+				conn.close();
+		}	
+   }
+
+   public void deleteFilmFromFilm(Long id) throws SQLException {
+	   try {
+		    conn = DriverManager.getConnection(URL + "?user=" + USER +"&password="+PASS);
+		    
+		    query = "DELETE FROM film WHERE film_id = ?";
+		    PreparedStatement preparedStatement = conn.prepareStatement(query);
+		    preparedStatement.setLong(1, id);
+		    preparedStatement.execute();
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+				conn.close();
+		}	
+   }
+   
 }

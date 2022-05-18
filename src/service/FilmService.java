@@ -165,7 +165,9 @@ public class FilmService {
 		System.out.println("Is this the film you want deleted? Enter Y if Yes");
 		String deleteConfirmation = scanner.nextLine();
 		if (deleteConfirmation.equals("Y")) {
-			filmRepository.deleteFilm(filmIdToBeDeleted);
+			filmRepository.deleteFilmFromFilmActor(filmIdToBeDeleted);
+			filmRepository.deleteFilmFromFilmCategory(filmIdToBeDeleted);
+			filmRepository.deleteFilmFromFilm(filmIdToBeDeleted);
 			System.out.println("FILM IS NOW DELETED.");
 		}
 		else {
